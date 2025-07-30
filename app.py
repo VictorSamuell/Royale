@@ -28,43 +28,43 @@ league_names = {
 
 # Cores para body (cor principal da liga)
 body_colors = {
-    1: "#5D4037",   # marrom
-    2: "#BDBDBD",   # prata
-    3: "#FBC02D",   # dourado
-    4: "#C71212",   # roxo
-    5: "#595A5C",   # azul
-    6: "#074E91",   # verde
-    7: "#063470",   # rosa
-    8: "#9C0E0E",   # laranja
-    9: "#1783B6",   # cinza escuro
-    10: "#9706AA"   # preto
+    1: "#643d2e",   
+    2: "#503017",   
+    3: "#503017",   
+    4: "#c12e24",   
+    5: "#534b63",   
+    6: "#276b98",   
+    7: "#063470",   
+    8: "#ad2e4b",   
+    9: "#2a6ace",   
+    10: "#8d5cd2"  
 }
 
-# Cores para player-card (cor secundária, geralmente preta ou próxima)
+
 card_colors = {
-    1: "#202020",    # preto
-    2: "#202020",
-    3: "#202020",
-    4: "#BEBABA",
-    5: "#858080",
-    6: "#686565",
+    1: "#8f4324",    
+    2: "#8f969e",
+    3: "#e3921d",
+    4: "#fff5e1",
+    5: "#adb9c5",
+    6: "#d3a075",
     7: "#E7BA25",
-    8: "#E7BA25",
-    9: "#E7BA25",
-    10: "#353534"   # amarelo para destaque no preto
+    8: "#ed9d2e",
+    9: "#ed9d2e",
+    10: "#8198aa"   
 }
 
 card_text_colors = {
-    1: "#FFFFFF",    # branco texto no preto
-    2: "#FFFFFF",
-    3: "#FFFFFF",
+    1: "#000000",    
+    2: "#131212",
+    3: "#131212",
     4: "#131212",
     5: "#131212",
     6: "#131212",
     7: "#131212",
     8: "#131212",
     9: "#131212",
-    10: "#FFFFFF"
+    10: "#131212"
 }
 
 def normalize_rarity(rarity):
@@ -128,7 +128,7 @@ def players():
     player_tag = ""
     league_name = None
 
-    # Padrão cores neutras
+    
     body_color = "#f0f0f0"
     card_color = "#a8a4a6"
     card_text_color = "#000000"

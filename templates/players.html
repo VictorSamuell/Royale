@@ -47,6 +47,7 @@
             <p>Derrotas: {{ player.losses }}</p>
             <p>Winrate: {{ ((player.wins / (player.wins + player.losses) * 100) if (player.wins + player.losses) > 0 else 0) | round(2) }}%</p>
             <p>Clã: {{ player.clan.name if player.clan else "Nenhum" }}</p>
+            <p>Carta favorita: {{player.currentFavouriteCard.name if player.currentFavouriteCard.name else "?"}}</p>
             <br>
             <h3>Melhor Temporada da Rota das Lendas</h3>
             <p>Melhor Liga: {{ league_name }}</p>

@@ -217,12 +217,12 @@ form button:hover {
 .player-card{
   font-family: 'Arial', sans-serif;
   width: 400px;
-  height: 700px;
+  
   translate: -6px -6px;
-  background: #a8a4a6; /* cor padrão */
+  background: #a8a4a6; 
   border: 3px solid #000000;
   box-shadow: 12px 12px 0 #000000;
-  background-color: var(--card-bg); /* cor dinâmica */
+  background-color: var(--card-bg); 
   color: var(--card-text);
   overflow: hidden;
   transition: all 0.3s ease;
