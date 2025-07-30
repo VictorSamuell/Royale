@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Buscar Jogador Clash Royale</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        /* Aqui aplicamos as cores dinâmicas via variáveis CSS */
+        body {
+            --body-bg: {{ body_color }};
+        }
+        .player-card {
+            --card-bg: {{ card_color }};
+            --card-text: {{ card_text_color }};
+        }
+    </style>
+</head>
+<body class="body-{{ league_class }}">
+    <nav>
+        <a href="{{ url_for('index') }}">Ver Cartas</a> |
+        <a href="{{ url_for('players') }}">Buscar Jogador</a>
+    </nav>
+
+    <h1>Buscar Jogador Clash Royale</h1>
+
+    <form method="post">
+        <label for="player_tag">Digite a Player Tag (ex: #2ABC):</label>
+        <input class="player-search" type="text" name="player_tag" id="player_tag" value="{{ player_tag }}" required />
+        <button type="submit">Buscar</button>
+    </form>
+
+    <div class="container">
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if player %}
+    <div class="player-card player-card-{{ league_class }}">
+        <div class="head"><h2>{{ player.name }} ({{ player.tag }})</h2></div>
+        <div class="content">
+            <p>Nível de Experiência: {{ player.expLevel }}</p>
+            <p>Troféus: {{ player.trophies }}</p>
+            <p>Máximo de Troféus: {{ player.bestTrophies }}</p>
+            <p>Vitórias:{{ player.wins }}</p>
+            <p>Derrotas: {{ player.losses }}</p>
+            <p>Winrate: {{ ((player.wins / (player.wins + player.losses) * 100) if (player.wins + player.losses) > 0 else 0) | round(2) }}%</p>
+            <p>Clã: {{ player.clan.name if player.clan else "Nenhum" }}</p>
+            <br>
+            <h3>Melhor Temporada da Rota das Lendas</h3>
+            <p>Melhor Liga: {{ league_name }}</p>
+            
+        </div>
+    </div>
+    {% endif %}
+    </div>
+</body>
+</html>

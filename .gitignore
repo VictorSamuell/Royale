@@ -1,0 +1,12 @@
+enviro/
+
+.env
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.vscode/
+
+*.log

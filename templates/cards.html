@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cartas do Clash Royale</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Ver Cartas</a> |
+        <a href="{{ url_for('players') }}">Buscar Jogador</a>
+    </nav>
+
+    <h1>Royale</h1>
+
+    <form method="get" class="filters">
+        <input class="search-bar" type="text" name="search" placeholder="Buscar por nome" value="{{ search }}">
+        <select class="select-filter" name="rarity">
+            <option value="">Todas as Raridades</option>
+            {% for r in ["Common", "Rare", "Epic", "Legendary", "Champion"] %}
+                <option value="{{ r }}" {% if rarity == r %}selected{% endif %}>{{ r }}</option>
+            {% endfor %}
+        </select>
+        <select class="select-filter" name="sort">
+            <option value="">Ordenar por...</option>
+            <option value="name" {% if sort == "name" %}selected{% endif %}>Nome</option>
+            <option value="rarity" {% if sort == "rarity" %}selected{% endif %}>Raridade</option>
+            <option value="elixir" {% if sort == "elixir" %}selected{% endif %}>Custo de Elixir</option>
+        </select>
+        <button type="submit">Aplicar</button>
+    </form>
+
+    <div class="cards">
+        {% for card in cards %}
+            <div class="card">
+                <img src="{{ card.iconUrls.medium }}" alt="{{ card.name }}">
+                <h2>{{ card.name }}</h2>
+                <p><strong>Raridade:</strong> {{ card.rarity }}</p>
+                <p><strong>Tipo:</strong> {{ card.type.capitalize() if card.type else "Desconhecido" }}</p>
+                <p><strong>Elixir:</strong> {{ card.elixirCost or "?" }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
