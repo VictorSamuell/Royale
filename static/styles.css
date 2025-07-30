@@ -20,12 +20,16 @@ nav {
     text-align: center;
     margin-bottom: 20px;
     box-shadow: 0 2px 8px rgba(20, 20, 20, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin: 0 15px;
+    margin: 10px 15px;
     font-weight: bold;
     font-size: 1.3em;
     transition: color 0.3s;
@@ -114,7 +118,10 @@ nav a:hover {
 
 .card img {
     width: 100%;
-    border-radius: 8px;
+    max-width: 180px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
 }
 
 .search-bar {
@@ -123,6 +130,7 @@ nav a:hover {
     font-size: 1em;
     color: #fff;
     background-color: #e5e5e6;
+    max-height: 20px;
     border: none;
     outline: none;
     padding: 10px;
@@ -282,6 +290,8 @@ h2 {
     margin-bottom: 20px;
     padding-bottom: 20px;
     text-align: center;
+    max-width: 100%;
+    word-wrap: break-word;
 }
 
 p{
@@ -289,15 +299,18 @@ p{
     color: var(--card-text);
     margin: 10px 5px;
     padding: 5px 0;
-    
+    max-width: 100%;
     border-bottom: 1px solid var(--card-text);
     font-size: 21px;
+    word-wrap: break-word;
 }
+
 
 .player-search {
     font-family: 'Arial', sans-serif;
     font-weight: 500;
     font-size: 1em;
+    max-height: 20px;
     color: #343535;
     background-color: #e5e5e6;
     border: none;
@@ -315,4 +328,69 @@ p{
 }
 .player-search:focus {
     background-color: #abadad;
+}
+
+@media (max-width: 768px) {
+    .cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 0 20px;
+    }
+
+    form {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    form label {
+        flex: none;
+        text-align: left;
+    }
+
+
+    nav a {
+        display: block;
+        margin: 10px 10px;
+    }
+
+    .player-card {
+        width: 90%;
+    }
+
+    .content p {
+        font-size: 16px;
+    }
+
+    .player-info {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 500px) {
+    nav {
+        padding: 10px;
+    }
+
+    nav a {
+        font-size: 1em;
+    }
+
+    .filters button {
+        font-size: 1em;
+    }
 }
