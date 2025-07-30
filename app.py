@@ -34,7 +34,7 @@ body_colors = {
     4: "#c12e24",   
     5: "#534b63",   
     6: "#276b98",   
-    7: "#063470",   
+    7: "#315383",   
     8: "#ad2e4b",   
     9: "#2a6ace",   
     10: "#8d5cd2"  
@@ -48,7 +48,7 @@ card_colors = {
     4: "#fff5e1",
     5: "#adb9c5",
     6: "#d3a075",
-    7: "#E7BA25",
+    7: "#c13329",
     8: "#ed9d2e",
     9: "#ed9d2e",
     10: "#8198aa"   
@@ -100,12 +100,16 @@ def fetch_player(player_tag):
         return None
 
 @app.route("/")
-def index():
+def index(): 
+
+
     search = request.args.get("search", "").lower()
     rarity_filter = request.args.get("rarity", "")
     sort_by = request.args.get("sort", "")
 
     cards = fetch_cards()
+
+    body_color = "#98979b"
 
     if search:
         cards = [c for c in cards if search in c["name"].lower()]
@@ -119,7 +123,7 @@ def index():
     elif sort_by == "name":
         cards.sort(key=lambda c: c["name"])
 
-    return render_template("cards.html", cards=cards, search=search, rarity=rarity_filter, sort=sort_by)
+    return render_template("cards.html",body_color=body_color, cards=cards, search=search, rarity=rarity_filter, sort=sort_by)
 
 @app.route("/players", methods=["GET", "POST"])
 def players():
@@ -129,7 +133,7 @@ def players():
     league_name = None
 
     
-    body_color = "#f0f0f0"
+    body_color = "#98979b"
     card_color = "#a8a4a6"
     card_text_color = "#000000"
 
