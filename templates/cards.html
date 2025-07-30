@@ -37,7 +37,6 @@
                 <img src="{{ card.iconUrls.medium }}" alt="{{ card.name }}">
                 <h2>{{ card.name }}</h2>
                 <p><strong>Raridade:</strong> {{ card.rarity }}</p>
-                <p><strong>Tipo:</strong> {{ card.type.capitalize() if card.type else "Desconhecido" }}</p>
                 <p><strong>Elixir:</strong> {{ card.elixirCost or "?" }}</p>
             </div>
         {% endfor %}
