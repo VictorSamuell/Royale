@@ -1,52 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cartas do Clash Royale</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
-    <style>
-        body {
-            --body-bg: {{ body_color }};
-        }
-    </style>
-
-</head>
-<body>
-    <nav>
-        <a href="{{ url_for('index') }}">Ver Cartas</a> |
-        <a href="{{ url_for('players') }}">Buscar Jogador</a>
-    </nav>
-
-    <h1>Royale</h1>
-
-    <form method="get" class="filters">
-        <input class="search-bar" type="text" name="search" placeholder="Buscar por nome" value="{{ search }}">
-        <select class="select-filter" name="rarity">
-            <option value="">Todas as Raridades</option>
-            {% for r in ["Common", "Rare", "Epic", "Legendary", "Champion"] %}
-                <option value="{{ r }}" {% if rarity == r %}selected{% endif %}>{{ r }}</option>
-            {% endfor %}
-        </select>
-        <select class="select-filter" name="sort">
-            <option value="">Ordenar por...</option>
-            <option value="name" {% if sort == "name" %}selected{% endif %}>Nome</option>
-            <option value="rarity" {% if sort == "rarity" %}selected{% endif %}>Raridade</option>
-            <option value="elixir" {% if sort == "elixir" %}selected{% endif %}>Custo de Elixir</option>
-        </select>
-        <button type="submit">Aplicar</button>
-    </form>
-
-    <div class="cards">
-        {% for card in cards %}
-            <div class="card">
-                <img src="{{ card.iconUrls.medium }}" alt="{{ card.name }}">
-                <h2>{{ card.name }}</h2>
-                <p><strong>Raridade:</strong> {{ card.rarity }}</p>
-                <p><strong>Elixir:</strong> {{ card.elixirCost or "?" }}</p>
-            </div>
-        {% endfor %}
-    </div>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Cartas · Royale{% endblock %}
+{% block content %}
+<div class="page-heading"><h1>Cartas</h1><p>Encontre as cartas do Clash Royale e compare seus custos.</p></div>
+<form method="get" class="filters panel">
+<div class="field search-field"><label for="search">Nome da carta</label><input id="search" name="search" placeholder="Buscar por nome" value="{{ search }}" type="search"></div>
+<div class="field"><label for="rarity">Raridade</label><select id="rarity" name="rarity"><option value="">Todas as raridades</option>{% for value, label in rarity_labels.items() %}<option value="{{ value }}" {% if rarity == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+<div class="field"><label for="sort">Ordenar por</label><select id="sort" name="sort"><option value="">Padrão</option>{% for value, label in [('name', 'Nome'), ('rarity', 'Raridade'), ('elixir', 'Custo de elixir')] %}<option value="{{ value }}" {% if sort == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><button>Aplicar</button></form>
+{% if error %}<div class="notice" role="alert"><h2>Não foi possível carregar as cartas</h2><p>{{ error }}</p><a href="{{ url_for('index', search=search, rarity=rarity, sort=sort) }}">Tentar novamente</a></div>{% else %}
+<div class="results-bar"><p>{{ cards|length }} {{ 'carta encontrada' if cards|length == 1 else 'cartas encontradas' }}</p>{% if search or rarity or sort %}<a href="{{ url_for('index') }}">Limpar filtros</a>{% endif %}</div>
+<div class="cards">{% for card in cards %}<article class="card"><div class="card-art"><img src="{{ card.iconUrls.medium }}" alt="{{ card.name }}" width="180" height="216" loading="lazy"><span class="elixir" title="Custo de elixir"><span class="sr-only">Elixir: </span>{{ card.elixirCost if card.elixirCost is defined and card.elixirCost is not none else '?' }}</span></div><h2>{{ card.name }}</h2><p class="rarity rarity-{{ card.rarity|lower }}">{{ rarity_labels.get(card.rarity, card.rarity) }}</p></article>{% else %}<div class="empty-state"><h2>Nenhuma carta encontrada</h2><p>Tente outro nome ou escolha uma raridade diferente.</p><a href="{{ url_for('index') }}">Ver todas as cartas</a></div>{% endfor %}</div>{% endif %}
+{% endblock %}

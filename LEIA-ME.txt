@@ -1,0 +1,11 @@
+Royale — atualização visual e funcional
+
+Instalação: pip install -r requirements.txt
+Configure API_TOKEN no ambiente ou em um arquivo .env local.
+Inicie com: python app.py
+
+Alterações: tema escuro com azul e dourado, layout responsivo, navegação compartilhada, filtros em português, estados vazios e mensagens de erro, normalização de tags, tempo limite de API, proteção de campos opcionais e elixir zero.
+
+Verificação: testes locais com respostas simuladas da API. A API real depende do token e da configuração de acesso da Supercell. Não foi feito deploy.
+
+Cache: cartas por 1 hora e perfis por 60 segundos, somente respostas bem-sucedidas. Até 256 entradas por processo; reinícios limpam o cache. Não elimina a inicialização da hospedagem. Testes: python test_cache.py.

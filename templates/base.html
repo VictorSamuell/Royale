@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101720"><title>{% block title %}Royale{% endblock %}</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<header><div class="header-inner"><a class="brand" href="{{ url_for('index') }}">Royale<span>.</span></a><nav aria-label="Menu principal"><a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>Cartas</a><a href="{{ url_for('players') }}" {% if request.endpoint == 'players' %}aria-current="page"{% endif %}>Jogadores</a></nav></div></header>
+<main id="conteudo">{% block content %}{% endblock %}</main>
+<footer>Royale · Projeto independente, sem vínculo com a Supercell.</footer>
+</body></html>
