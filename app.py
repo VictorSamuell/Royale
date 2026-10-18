@@ -20,6 +20,17 @@ HEADERS = {'Authorization': f"Bearer {os.getenv('API_TOKEN')}"}
 RARITIES = {'Common': 'Comum', 'Rare': 'Rara', 'Epic': 'Épica', 'Legendary': 'Lendária', 'Champion': 'Campeão'}
 LEAGUES = dict(enumerate(['Desafiante I', 'Desafiante II', 'Desafiante III', 'Mestre I', 'Mestre II', 'Mestre III', 'Campeão', 'Grande Campeão', 'Campeão Real', 'Maior Campeão'], 1))
 
+def best_league(player):
+    # Include recent progress, even before it appears in the best-season field.
+    numbers = []
+    for field in ('bestPathOfLegendSeasonResult', 'currentPathOfLegendSeasonResult',
+                  'lastPathOfLegendSeasonResult'):
+        season = player.get(field)
+        number = season.get('leagueNumber') if isinstance(season, dict) else None
+        if type(number) is int and number in LEAGUES:
+            numbers.append(number)
+    return max(numbers, default=0)
+
 class APIError(Exception):
     pass
 
@@ -110,6 +121,7 @@ def players():
     player = None
     error = None
     league_name = 'Sem registro'
+    league_number = 0
     winrate = 0
     if tag:
         tag = '#' + tag.lstrip('#')
@@ -118,13 +130,13 @@ def players():
         else:
             try:
                 player = api_get(API_URL_PLAYER + quote(tag, safe=''))
-                season = player.get('bestPathOfLegendSeasonResult') or {}
-                league_name = LEAGUES.get(season.get('leagueNumber'), 'Sem registro')
+                league_number = best_league(player)
+                league_name = LEAGUES.get(league_number, 'Sem registro')
                 wins, losses = player.get('wins', 0), player.get('losses', 0)
                 winrate = round(wins / (wins + losses) * 100, 1) if wins + losses else 0
             except APIError as exc:
                 error = str(exc)
-    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, winrate=winrate)
+    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
