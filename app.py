@@ -11,8 +11,11 @@ from urllib.parse import quote
 
 load_dotenv()
 app = Flask(__name__)
-API_URL_CARDS = 'https://api.clashroyale.com/v1/cards'
-API_URL_PLAYER = 'https://api.clashroyale.com/v1/players/'
+API_BASE_URL = os.getenv('CLASH_API_BASE_URL', 'https://api.clashroyale.com').rstrip('/')
+if API_BASE_URL not in {'https://api.clashroyale.com', 'https://proxy.royaleapi.dev'}:
+    raise RuntimeError('CLASH_API_BASE_URL deve ser a API oficial ou o proxy RoyaleAPI.')
+API_URL_CARDS = API_BASE_URL + '/v1/cards'
+API_URL_PLAYER = API_BASE_URL + '/v1/players/'
 HEADERS = {'Authorization': f"Bearer {os.getenv('API_TOKEN')}"}
 RARITIES = {'Common': 'Comum', 'Rare': 'Rara', 'Epic': 'Épica', 'Legendary': 'Lendária', 'Champion': 'Campeão'}
 LEAGUES = dict(enumerate(['Desafiante I', 'Desafiante II', 'Desafiante III', 'Mestre I', 'Mestre II', 'Mestre III', 'Campeão', 'Grande Campeão', 'Campeão Real', 'Maior Campeão'], 1))
