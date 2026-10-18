@@ -45,8 +45,28 @@ def api_get(url):
 def _fetch_api(url):
     try:
         response = requests.get(url, headers=HEADERS, timeout=(3.05, 8))
+        if response.status_code >= 400:
+            # Only log known error identifiers, never headers, tokens or response bodies.
+            reason = 'unknown'
+            try:
+                payload = response.json()
+                candidate = payload.get('reason') if isinstance(payload, dict) else None
+                if candidate in {'accessDenied', 'accessDenied.invalidIp', 'notFound',
+                                 'rateLimitExceeded', 'maintenance', 'badRequest'}:
+                    reason = candidate
+            except ValueError:
+                pass
+            app.logger.warning('Clash API: HTTP %s; reason=%s; endpoint=%s; token_configured=%s',
+                               response.status_code, reason,
+                               'cards' if url == API_URL_CARDS else 'players',
+                               bool(os.getenv('API_TOKEN', '').strip()))
+            if response.status_code in (401, 403):
+                raise APIError('Não foi possível autorizar a consulta ao Clash Royale. A configuração de acesso do site precisa ser verificada.')
+            if response.status_code == 429:
+                raise APIError('Muitas consultas no momento. Aguarde um pouco e tente novamente.')
         if response.status_code == 404:
-            raise APIError('Jogador não encontrado. Confira a tag no perfil do jogo.')
+            if url.startswith(API_URL_PLAYER):
+                raise APIError('Jogador não encontrado. Confira a tag no perfil do jogo.')
         response.raise_for_status()
         return response.json()
     except (requests.RequestException, ValueError) as exc:
