@@ -18,7 +18,7 @@ API_URL_CARDS = API_BASE_URL + '/v1/cards'
 API_URL_PLAYER = API_BASE_URL + '/v1/players/'
 HEADERS = {'Authorization': f"Bearer {os.getenv('API_TOKEN')}"}
 RARITIES = {'Common': 'Comum', 'Rare': 'Rara', 'Epic': 'Épica', 'Legendary': 'Lendária', 'Champion': 'Campeão'}
-LEAGUES = dict(enumerate(['Desafiante I', 'Desafiante II', 'Desafiante III', 'Mestre I', 'Mestre II', 'Mestre III', 'Campeão', 'Grande Campeão', 'Campeão Real', 'Maior Campeão'], 1))
+LEAGUES = dict(enumerate(['Mestre I', 'Mestre II', 'Mestre III', 'Campeão', 'Grande Campeão', 'Campeão Real', 'Maior Campeão'], 1))
 
 def best_league(player):
     # Include recent progress, even before it appears in the best-season field.
@@ -27,6 +27,9 @@ def best_league(player):
                   'lastPathOfLegendSeasonResult'):
         season = player.get(field)
         number = season.get('leagueNumber') if isinstance(season, dict) else None
+        # Unambiguous historical values above 7 use the former 10-league scale.
+        if field == 'bestPathOfLegendSeasonResult' and type(number) is int and 8 <= number <= 10:
+            number -= 3
         if type(number) is int and number in LEAGUES:
             numbers.append(number)
     return max(numbers, default=0)
