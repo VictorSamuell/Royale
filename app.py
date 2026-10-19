@@ -34,6 +34,26 @@ def best_league(player):
             numbers.append(number)
     return max(numbers, default=0)
 
+def champion_results(player):
+    results = []
+    for field, label in (
+        ('currentPathOfLegendSeasonResult', 'Temporada atual'),
+        ('lastPathOfLegendSeasonResult', 'Temporada anterior'),
+        ('bestPathOfLegendSeasonResult', 'Melhor temporada registrada')):
+        season = player.get(field)
+        if not isinstance(season, dict):
+            continue
+        number = season.get('leagueNumber')
+        if number != 7 and not (field == 'bestPathOfLegendSeasonResult' and number == 10):
+            continue
+        score, rank = season.get('trophies'), season.get('rank')
+        results.append({
+            'label': label,
+            'score': score if type(score) is int and score >= 0 else None,
+            'rank': rank if type(rank) is int and rank > 0 else None,
+        })
+    return results
+
 class APIError(Exception):
     pass
 
@@ -139,7 +159,7 @@ def players():
                 winrate = round(wins / (wins + losses) * 100, 1) if wins + losses else 0
             except APIError as exc:
                 error = str(exc)
-    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate)
+    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate, champion_results=champion_results(player) if player else [])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

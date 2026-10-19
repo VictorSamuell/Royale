@@ -7,6 +7,15 @@
 {% if error %}<div class="notice" role="alert"><h2>Não foi possível buscar o jogador</h2><p>{{ error }}</p></div>{% endif %}
 {% if player %}<section class="player-card panel" aria-labelledby="player-name"><div class="player-heading"><div><p class="eyebrow">Perfil do jogador</p><h2 id="player-name">{{ player.name }}</h2><p class="tag">{{ player.tag }}</p></div><span class="level">Nível {{ player.expLevel|default('—') }}</span></div>
 <div class="league-banner"><p>Melhor liga · Rota das Lendas</p><h2>{{ league_name }}</h2><p class="hint">Maior liga entre os resultados de temporada disponíveis na API.</p></div>
+{% if champion_results %}
+<section class="champion-results" aria-labelledby="champion-title">
+<h3 id="champion-title">Pontuação em Maior Campeão</h3>
+<div class="season-results">{% for result in champion_results %}
+<div class="season-result"><h4>{{ result.label }}</h4>
+<p class="season-score">{% if result.score is not none %}{{ '{:,}'.format(result.score).replace(',', '.') }} <small>pontos</small>{% else %}Pontuação não informada{% endif %}</p>
+<p class="hint">{% if result.rank is not none %}Ranking global: #{{ '{:,}'.format(result.rank).replace(',', '.') }}{% else %}Ranking global não informado{% endif %}</p></div>
+{% endfor %}</div></section>
+{% endif %}
 <dl class="stats"><div><dt>Troféus</dt><dd class="gold">{{ player.trophies|default('—') }}</dd></div><div><dt>Recorde de troféus</dt><dd>{{ player.bestTrophies|default('—') }}</dd></div><div><dt>Vitórias</dt><dd>{{ player.wins|default(0) }}</dd></div><div><dt>Derrotas</dt><dd>{{ player.losses|default(0) }}</dd></div><div><dt>Taxa de vitória</dt><dd>{{ winrate }}<small>%</small></dd></div></dl>
 <dl class="player-details"><div><dt>Clã</dt><dd>{{ (player.get('clan') or {}).get('name', 'Sem clã') }}</dd></div><div><dt>Carta favorita</dt><dd>{{ (player.get('currentFavouriteCard') or {}).get('name', 'Não informada') }}</dd></div></dl></section>
 {% elif not error %}<div class="empty-state"><h2>Seu perfil começa pela tag</h2><p>Digite a tag acima, com ou sem o símbolo #.</p></div>{% endif %}
