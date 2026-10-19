@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import requests
 import os
 import re
@@ -16,6 +16,7 @@ if API_BASE_URL not in {'https://api.clashroyale.com', 'https://proxy.royaleapi.
     raise RuntimeError('CLASH_API_BASE_URL deve ser a API oficial ou o proxy RoyaleAPI.')
 API_URL_CARDS = API_BASE_URL + '/v1/cards'
 API_URL_PLAYER = API_BASE_URL + '/v1/players/'
+API_URL_TOP = API_BASE_URL + '/v1/locations/global/pathoflegend/players?limit=3'
 HEADERS = {'Authorization': f"Bearer {os.getenv('API_TOKEN')}"}
 RARITIES = {'Common': 'Comum', 'Rare': 'Rara', 'Epic': 'Épica', 'Legendary': 'Lendária', 'Champion': 'Campeão'}
 LEAGUES = dict(enumerate(['Mestre I', 'Mestre II', 'Mestre III', 'Campeão', 'Grande Campeão', 'Campeão Real', 'Maior Campeão'], 1))
@@ -63,7 +64,7 @@ _fetch_locks = [Lock() for _ in range(32)]
 MAX_CACHE_ENTRIES = 256
 
 def api_get(url):
-    ttl = 3600 if url == API_URL_CARDS else 60
+    ttl = 3600 if url == API_URL_CARDS else (300 if url == API_URL_TOP else 60)
     with _fetch_locks[hash(url) % len(_fetch_locks)]:
         with _cache_lock:
             entry = _cache.get(url)
@@ -135,6 +136,24 @@ def index():
     except APIError as exc:
         error = str(exc)
     return render_template('cards.html', cards=cards, search=search, rarity=rarity, sort=sort, rarity_labels=RARITIES, error=error)
+
+@app.route('/examples/top')
+def top_examples():
+    try:
+        data = api_get(API_URL_TOP)
+        rows = []
+        for item in data.get('items', [])[:3]:
+            tag = item.get('tag', '')
+            rank = item.get('rank')
+            if not isinstance(tag, str) or not re.fullmatch(r'#[0289PYLQGRJCUV]{3,15}', tag):
+                continue
+            if type(rank) is not int or rank < 1:
+                continue
+            rows.append({'name': item.get('name', tag), 'rank': rank,
+                         'url': url_for('players', tag=tag)})
+        return jsonify(players=rows)
+    except APIError:
+        return jsonify(players=[], error='Ranking indisponível no momento.'), 503
 
 @app.route('/players', methods=['GET', 'POST'])
 def players():
