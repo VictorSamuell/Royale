@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% from 'deck.html' import show_deck %}
+{% block title %}Comparar jogadores · Royale{% endblock %}
+{% block content %}
+<div class="page-heading"><h1>Comparar jogadores</h1><p>Ligas, pontuação e resultados lado a lado.</p></div>
+<form class="filters panel" method="get"><div class="field search-field"><label for="compare-a">Primeiro jogador</label><input id="compare-a" name="a" value="{{ inputs[0] }}" placeholder="#URRCCL8" required maxlength="20"></div><div class="field search-field"><label for="compare-b">Segundo jogador</label><input id="compare-b" name="b" value="{{ inputs[1] }}" placeholder="#TAG" required maxlength="20"></div><button>Comparar</button></form>
+{% for error in errors %}{% if error %}<p class="notice" role="alert">Jogador {{ loop.index }}: {{ error }}</p>{% endif %}{% endfor %}
+{% if profiles %}<div class="comparison-scroll" tabindex="0" role="region" aria-label="Comparação de jogadores"><table class="comparison-table"><thead><tr><th scope="col">Estatística</th>{% for profile in profiles %}<th scope="col">{% if profile %}<a href="{{ url_for('players', tag=profile.tag) }}">{{ profile.name }}</a><small>{{ profile.tag }}</small>{% else %}Indisponível{% endif %}</th>{% endfor %}</tr></thead><tbody>{% for label in labels %}{% set row = loop.index0 %}<tr><th scope="row">{{ label }}</th>{% for profile in profiles %}<td>{{ profile['values'][row] if profile else '—' }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>
+<div class="compare-decks">{% for profile in profiles %}{% if profile %}<section class="panel tool-panel"><h2>Deck de {{ profile.name }}</h2>{{ show_deck(profile.deck) }}</section>{% endif %}{% endfor %}</div>
+{% else %}<p class="empty-state">Informe duas tags para comparar. Pontuações são exibidas na mesma temporada.</p>{% endif %}
+{% endblock %}

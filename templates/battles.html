@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% from 'deck.html' import show_deck %}
+{% block title %}Últimas batalhas · Royale{% endblock %}
+{% block content %}
+<div class="page-heading"><h1>Últimas batalhas</h1><p>{{ tag }} · Até 10 partidas recentes disponíveis.</p><a href="{{ url_for('players', tag=tag) }}">Voltar ao perfil</a></div>
+{% if error %}<p class="notice" role="alert">{{ error }}</p>{% else %}
+{% for battle in battles %}<article class="panel battle tool-panel"><div class="battle-heading"><h2 class="result-{{ battle.style }}">{{ battle.result }}</h2><strong>{{ battle.crowns }}</strong></div><p class="hint">{{ battle.mode }}{% if battle.timestamp %} · <time datetime="{{ battle.timestamp }}">{{ battle.timestamp }}</time>{% endif %}</p>
+<p>Contra {% for opponent in battle.opponents %}{% if opponent.get('tag') %}<a href="{{ url_for('players', tag=opponent.tag) }}">{{ opponent.get('name', opponent.tag) }}</a>{% else %}Adversário{% endif %}{{ ', ' if not loop.last else '' }}{% endfor %}</p>
+{% if battle.team|length > 1 %}<p class="hint">Partida em equipe · resultado não inferido a partir das coroas.</p>{% endif %}
+<details><summary>Ver decks utilizados</summary><h3>Seu deck nesta partida</h3>{{ show_deck(battle.deck) }}{% for opponent in battle.opponent_decks %}<h3>Deck de {{ opponent.name }}</h3>{{ show_deck(opponent.deck) }}{% endfor %}</details></article>
+{% else %}<p class="empty-state">Nenhuma batalha disponível no momento.</p>{% endfor %}{% endif %}
+<script src="{{ url_for('static', filename='profile.js') }}" defer></script>
+{% endblock %}

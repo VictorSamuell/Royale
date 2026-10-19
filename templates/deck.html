@@ -1,0 +1,10 @@
+{% macro show_deck(deck) %}
+{% if deck.cards %}<div class="deck-grid">
+{% for card in deck.cards %}<div class="deck-card">
+{% if (card.get('iconUrls') or {}).get('medium') %}<img src="{{ card.iconUrls.medium }}" alt="" loading="lazy" width="100" height="120">{% endif %}
+<span>{{ card.get('name', 'Carta') }}</span>{% if card.get('evolutionLevel', 0) > 0 %}<small>Evolução disponível</small>{% endif %}
+</div>{% endfor %}</div>
+{% if deck.average is not none %}<p class="hint">Elixir médio: {{ deck.average }}</p>{% endif %}
+{% if deck.link %}<a class="action-link" href="{{ deck.link }}" target="_blank" rel="noopener noreferrer">Copiar deck para o jogo</a><p class="hint">Abre o Clash Royale para importar as 8 cartas. Confira as evoluções e a tropa de torre no jogo.</p>{% endif %}
+{% else %}<p class="hint">Deck não informado.</p>{% endif %}
+{% endmacro %}

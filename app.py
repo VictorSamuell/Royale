@@ -180,5 +180,8 @@ def players():
                 error = str(exc)
     return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate, champion_results=champion_results(player) if player else [])
 
+from profile_tools import register_features
+register_features(app, lambda url: api_get(url), API_URL_PLAYER, APIError, best_league, LEAGUES)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
