@@ -45,6 +45,37 @@ def battle_rows(data, tag):
                      'deck': deck_info(own.get('cards')), 'opponent_decks': [dict(name=p.get('name', 'Adversário'), deck=deck_info(p.get('cards'))) for p in opponents]})
     return rows
 
+def player_momentum(data, tag):
+    """Recent one-on-one form, computed from the API's last ten battles."""
+    results = []
+    crowns_for = crowns_against = crown_matches = 0
+    for battle in data[:10] if isinstance(data, list) else []:
+        teams = battle.get('team') or []
+        opponents = battle.get('opponent') or []
+        own = next((p for p in teams if isinstance(p, dict) and p.get('tag') == tag), None)
+        if own is None or len(teams) != 1 or len(opponents) != 1:
+            continue
+        enemy = opponents[0]
+        if not isinstance(enemy, dict) or type(own.get('crowns')) is not int or type(enemy.get('crowns')) is not int:
+            continue
+        a, b = own['crowns'], enemy['crowns']
+        crowns_for += a; crowns_against += b; crown_matches += 1
+        if a > b: results.append('V')
+        elif a < b: results.append('D')
+        else: results.append('E')
+    wins, losses, draws = results.count('V'), results.count('D'), results.count('E')
+    streak = 0
+    if results:
+        outcome = results[0]
+        if outcome in ('V', 'D'):
+            while streak < len(results) and results[streak] == outcome:
+                streak += 1
+    return {'played': len(results), 'wins': wins, 'losses': losses, 'draws': draws,
+            'win_rate': round(wins / len(results) * 100) if results else None,
+            'streak': f'{streak} {"vitória(s)" if results[0] == "V" else "derrota(s)"}' if streak and results[0] in ('V','D') else 'Sem sequência',
+            'average_crowns': round(crowns_for / crown_matches, 1) if crown_matches else None,
+            'crowns_for': crowns_for, 'crowns_against': crowns_against}
+
 def comparison(player, best_league, leagues):
     wins, losses = player.get('wins', 0), player.get('losses', 0)
     current = player.get('currentPathOfLegendSeasonResult') or {}
