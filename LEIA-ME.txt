@@ -9,3 +9,6 @@ Alterações: tema escuro com azul e dourado, layout responsivo, navegação com
 Verificação: testes locais com respostas simuladas da API. A API real depende do token e da configuração de acesso da Supercell. Não foi feito deploy.
 
 Cache: cartas por 1 hora e perfis por 60 segundos, somente respostas bem-sucedidas. Até 256 entradas por processo; reinícios limpam o cache. Não elimina a inicialização da hospedagem. Testes: python test_cache.py.
+
+Recursos: perfis favoritos, comparação, decks e histórico de batalhas.
+
