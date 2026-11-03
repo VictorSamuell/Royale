@@ -8,7 +8,7 @@ from threading import Lock
 from time import monotonic
 from dotenv import load_dotenv
 from urllib.parse import quote
-from profile_tools import player_momentum
+from profile_tools import player_momentum, player_style
 
 load_dotenv()
 app = Flask(__name__)
@@ -166,6 +166,7 @@ def players():
     league_name = 'Sem registro'
     league_number = 0
     winrate = 0
+    momentum = style = None
     if tag:
         tag = '#' + tag.lstrip('#')
         if not re.fullmatch(r'#[0289PYLQGRJCUV]{3,15}', tag):
@@ -174,9 +175,11 @@ def players():
             try:
                 player = api_get(API_URL_PLAYER + quote(tag, safe=''))
                 try:
-                    momentum = player_momentum(api_get(API_URL_PLAYER + quote(tag, safe='') + '/battlelog'), tag)
+                    battlelog = api_get(API_URL_PLAYER + quote(tag, safe='') + '/battlelog')
+                    momentum = player_momentum(battlelog, tag)
+                    style = player_style(battlelog, tag)
                 except APIError:
-                    momentum = None
+                    momentum = style = None
                 league_number = best_league(player)
                 league_name = LEAGUES.get(league_number, 'Sem registro')
                 wins, losses = player.get('wins', 0), player.get('losses', 0)
@@ -185,7 +188,7 @@ def players():
                 error = str(exc)
     results = champion_results(player) if player else []
     current_champion_score = next((item['score'] for item in results if item['label'] == 'Temporada atual'), None)
-    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate, champion_results=results, current_champion_score=current_champion_score, momentum=momentum if player else None)
+    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate, champion_results=results, current_champion_score=current_champion_score, momentum=momentum if player else None, style=style if player else None)
 
 from profile_tools import register_features
 register_features(app, lambda url: api_get(url), API_URL_PLAYER, APIError, best_league, LEAGUES)

@@ -76,6 +76,41 @@ def player_momentum(data, tag):
             'average_crowns': round(crowns_for / crown_matches, 1) if crown_matches else None,
             'crowns_for': crowns_for, 'crowns_against': crowns_against}
 
+def player_style(data, tag):
+    """Card usage in recent one-on-one battles with a clear crown result."""
+    stats = {}
+    matches = 0
+    for battle in data if isinstance(data, list) else []:
+        if not isinstance(battle, dict):
+            continue
+        teams, opponents = battle.get('team') or [], battle.get('opponent') or []
+        own = next((p for p in teams if isinstance(p, dict) and p.get('tag') == tag), None)
+        if own is None or len(teams) != 1 or len(opponents) != 1:
+            continue
+        enemy = opponents[0]
+        if not isinstance(enemy, dict) or type(own.get('crowns')) is not int or type(enemy.get('crowns')) is not int or own['crowns'] == enemy['crowns']:
+            continue
+        matches += 1
+        won = own['crowns'] > enemy['crowns']
+        # A card is counted once per match, even if the API repeats it in malformed data.
+        seen = set()
+        for card in own.get('cards') or []:
+            if not isinstance(card, dict):
+                continue
+            key = card.get('id') or card.get('name')
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            icons = card.get('iconUrls')
+            icons = icons if isinstance(icons, dict) else {}
+            entry = stats.setdefault(key, {'name': card.get('name') or 'Carta', 'image': icons.get('medium') or icons.get('evolutionMedium'), 'used': 0, 'wins': 0})
+            entry['used'] += 1
+            entry['wins'] += int(won)
+    cards = sorted(stats.values(), key=lambda card: (-card['used'], -(card['wins'] / card['used']), card['name'].casefold()))[:6]
+    for card in cards:
+        card['win_rate'] = round(card['wins'] / card['used'] * 100)
+    return {'matches': matches, 'cards': cards}
+
 def comparison(player, best_league, leagues):
     wins, losses = player.get('wins', 0), player.get('losses', 0)
     current = player.get('currentPathOfLegendSeasonResult') or {}
