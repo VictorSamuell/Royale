@@ -14,6 +14,38 @@
   if (status) status.textContent = storageOK ? 'Salvos apenas neste navegador, sem login.' : 'Não foi possível salvar neste navegador. Alterações valem apenas nesta página.';
  }
  const favorite = document.getElementById('favorite-profile');
+ const share = document.getElementById('share-profile');
+ share?.addEventListener('click', () => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200; canvas.height = 630;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) { const message=document.getElementById('share-status'); if(message) message.textContent='Seu navegador não conseguiu criar a imagem.'; return; }
+  const background=ctx.createLinearGradient(0,0,1200,630);
+  background.addColorStop(0,'#101720'); background.addColorStop(1,'#1b2a42');
+  ctx.fillStyle=background;ctx.fillRect(0,0,1200,630);
+  ctx.strokeStyle='#e4bd68';ctx.lineWidth=6;ctx.strokeRect(28,28,1144,574);
+  ctx.fillStyle='#e4bd68';ctx.font='bold 30px Arial';ctx.fillText('ROYALE',72,94);
+  ctx.fillStyle='#edf1f5';ctx.font='bold 62px Arial';
+  let name=share.dataset.name || 'Jogador';
+  while(ctx.measureText(name).width>1040 && name.length>3) name=name.slice(0,-2)+'…';
+  ctx.fillText(name,72,210);
+  ctx.fillStyle='#a7b4c3';ctx.font='30px Arial';ctx.fillText(share.dataset.tag || '',74,260);
+  ctx.strokeStyle='#303e4d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(72,310);ctx.lineTo(1128,310);ctx.stroke();
+  const stats=[['MELHOR LIGA',share.dataset.league],['MAIOR CAMPEÃO',share.dataset.points+' pontos'],['TROFÉUS',share.dataset.trophies],['APROVEITAMENTO',share.dataset.winrate]];
+  stats.forEach(([label,value],i)=>{
+   const x=72+(i%2)*540,y=390+Math.floor(i/2)*112;
+   ctx.fillStyle='#a7b4c3';ctx.font='bold 19px Arial';ctx.fillText(label,x,y);
+   ctx.fillStyle='#edf1f5';ctx.font='bold 34px Arial';
+   let display=String(value || '—');while(ctx.measureText(display).width>480 && display.length>4) display=display.slice(0,-2)+'…';
+   ctx.fillText(display,x,y+42);
+  });
+  ctx.fillStyle='#a7b4c3';ctx.font='18px Arial';ctx.fillText('Perfil gerado em royale-5z0o.onrender.com',72,560);
+  canvas.toBlob(blob=>{
+   if(!blob){const message=document.getElementById('share-status');if(message)message.textContent='Não foi possível gerar o cartão. Tente novamente.';return;}
+   const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`royale-${(share.dataset.tag||'perfil').replace('#','')}.png`;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+   const message=document.getElementById('share-status');if(message)message.textContent='Cartão baixado em PNG, pronto para compartilhar.';
+  },'image/png');
+ });
  function render() {
   for (const [type, id] of [['favorites','favorites-list'],['recent','recent-list']]) {
    const container = document.getElementById(id); if (!container) continue;

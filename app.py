@@ -183,7 +183,9 @@ def players():
                 winrate = round(wins / (wins + losses) * 100, 1) if wins + losses else 0
             except APIError as exc:
                 error = str(exc)
-    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate, champion_results=champion_results(player) if player else [], momentum=momentum if player else None)
+    results = champion_results(player) if player else []
+    current_champion_score = next((item['score'] for item in results if item['label'] == 'Temporada atual'), None)
+    return render_template('players.html', player=player, player_tag=tag, error=error, league_name=league_name, league_number=league_number, winrate=winrate, champion_results=results, current_champion_score=current_champion_score, momentum=momentum if player else None)
 
 from profile_tools import register_features
 register_features(app, lambda url: api_get(url), API_URL_PLAYER, APIError, best_league, LEAGUES)
